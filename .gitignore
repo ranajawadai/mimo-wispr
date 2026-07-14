@@ -1,0 +1,23 @@
+# Secrets / local config (NEVER commit the real one)
+config.json
+.env
+*.local
+
+# Logs
+*.log
+traffic.log
+
+# Build output (attached to GitHub Releases instead)
+/dist/
+
+# Bundled runtimes (shipped in release zip, not in git)
+node.exe
+ffmpeg.exe
+
+# Dependencies
+node_modules/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.tmp

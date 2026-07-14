@@ -1,0 +1,12 @@
+{
+  "mimo_api_key": "",
+  "mimo_base_url": "https://api.xiaomimimo.com/v1",
+  "mimo_asr_model": "mimo-v2.5-asr",
+  "mimo_api_header": "api-key",
+  "mimo_language": "auto",
+  "listen_port": 8000,
+  "upstream": "https://api.wisprflow.ai",
+  "request_timeout": 18000,
+  "chunk_sec": 30,
+  "audio_filter": "highpass=f=80,loudnorm=I=-16:TP=-1.5"
+}

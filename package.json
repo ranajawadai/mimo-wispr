@@ -1,0 +1,17 @@
+{
+  "name": "mimoflow",
+  "version": "1.0.0",
+  "description": "Use Wispr Flow with your own Xiaomi MiMo speech-to-text key. Open source, unlimited dictation.",
+  "main": "src/proxy/proxy.js",
+  "scripts": {
+    "start": "node src/proxy/proxy.js",
+    "test:proxy": "node src/proxy/proxy.js --test",
+    "build": "pwsh -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "release": "pwsh -ExecutionPolicy Bypass -File scripts/release.ps1"
+  },
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">=18"
+  }
+}
