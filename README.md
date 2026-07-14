@@ -78,6 +78,8 @@ The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg)
 - **Drop-in** — Wispr login, sync, and UI stay exactly the same.
 - **English + Hinglish** — MiMo `auto` language detection handles code-switching.
 - **Long-audio aware** — automatic chunking keeps transcripts accurate.
+- **One-click dashboard** — `MiMo-Flow.bat` opens a simple window: get your key,
+  save it, press **Start MiMo Flow**. No commands, no PowerShell knowledge needed.
 - **Portable** — ships with bundled `node.exe` + `ffmpeg.exe`; no install needed.
 - **Safe patch** — your original `app.asar` is backed up before any change.
 - **MIT licensed** — free to use, modify, and redistribute.
@@ -174,6 +176,8 @@ $env:MIMO_API_KEY = "sk-..."; node src/proxy/proxy.js --test path\to\audio.webm
 - **No telemetry, no network calls** except:
   - to **MiMo** (for transcription, using your key), and
   - to **Wispr's own servers** (for login/sync passthrough).
+- **Transcriptions stay private** — the proxy never writes your dictated text to
+  logs or disk; it logs only character counts and language.
 - The project ships **zero personal data**.
 - The asar patch only rewrites your **local** Wispr install; nothing is uploaded.
 
