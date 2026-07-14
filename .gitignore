@@ -9,6 +9,7 @@ traffic.log
 
 # Build output (attached to GitHub Releases instead)
 /dist/
+/releases/
 
 # Bundled runtimes (shipped in release zip, not in git)
 node.exe

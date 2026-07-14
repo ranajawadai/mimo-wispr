@@ -5,6 +5,7 @@ $dir = $PSScriptRoot
 $cfgPath = Join-Path $dir 'config.json'
 $samplePath = Join-Path $dir 'config.sample.json'
 
+# ---------- config helpers ----------
 function Load-Config {
   if (Test-Path -LiteralPath $cfgPath) {
     try { return (Get-Content -LiteralPath $cfgPath -Raw | ConvertFrom-Json) } catch {}
@@ -14,17 +15,12 @@ function Load-Config {
   }
   return [pscustomobject]@{}
 }
-
-function Save-ConfigKey($key) {
+function Save-Key($key) {
   $cfg = Load-Config
-  if ($null -eq $cfg.mimo_api_key) {
-    $cfg = [pscustomobject]@{ mimo_api_key = $key }
-  } else {
-    $cfg.mimo_api_key = $key
-  }
+  if ($null -eq $cfg.mimo_api_key) { $cfg = [pscustomobject]@{ mimo_api_key = $key } }
+  else { $cfg.mimo_api_key = $key }
   $cfg | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $cfgPath -Encoding UTF8
 }
-
 function Run-Node($scriptPath) {
   $node = Join-Path $dir 'node.exe'
   if (-not (Test-Path -LiteralPath $node)) { $node = 'node.exe' }
@@ -41,7 +37,6 @@ function Run-Node($scriptPath) {
   $p.WaitForExit()
   return $out
 }
-
 function Repoint-Shortcut {
   $lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Wispr Flow.lnk'
   $launcher = Join-Path $dir 'launch.ps1'
@@ -50,26 +45,41 @@ function Repoint-Shortcut {
   $sc.TargetPath = 'powershell.exe'
   $sc.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$launcher`""
   $sc.WorkingDirectory = $dir
-  $sc.IconLocation = Join-Path $env:LOCALAPPDATA 'WisprFlow\Wispr Flow.exe'
+  try { $sc.IconLocation = Join-Path $env:LOCALAPPDATA 'WisprFlow\Wispr Flow.exe' } catch {}
   $sc.Save()
   return $lnk
 }
-
-function Show-Status {
+function Test-WisprInstalled {
+  $base = Join-Path $env:LOCALAPPDATA 'WisprFlow'
+  if (-not (Test-Path -LiteralPath $base)) { return $false }
+  if (Test-Path -LiteralPath (Join-Path $base 'Wispr Flow.exe')) { return $true }
+  $asar = Get-ChildItem -LiteralPath $base -Recurse -Filter 'app.asar' -ErrorAction SilentlyContinue | Select-Object -First 1
+  return ($null -ne $asar)
+}
+function Refresh-Status {
   $cfg = Load-Config
   if ($cfg.mimo_api_key -and $cfg.mimo_api_key.Length -gt 0) {
-    $status.Text = 'Status: Key saved  |  Ready to launch'
-    $status.ForeColor = [System.Drawing.Color]::FromArgb(60,180,90)
+    $keyStatus.Text = 'MiMo key: Saved OK'
+    $keyStatus.ForeColor = [System.Drawing.Color]::FromArgb(60,180,90)
   } else {
-    $status.Text = 'Status: No MiMo key yet  |  Paste your key and Save'
-    $status.ForeColor = [System.Drawing.Color]::FromArgb(220,170,60)
+    $keyStatus.Text = 'MiMo key: not saved yet'
+    $keyStatus.ForeColor = [System.Drawing.Color]::FromArgb(220,170,60)
+  }
+  if (Test-WisprInstalled) {
+    $wisprStatus.Text = 'Wispr Flow: Installed'
+    $wisprStatus.ForeColor = [System.Drawing.Color]::FromArgb(60,180,90)
+  } else {
+    $wisprStatus.Text = 'Wispr Flow: NOT installed (use Download button)'
+    $wisprStatus.ForeColor = [System.Drawing.Color]::FromArgb(220,90,70)
   }
 }
+function Log($m) { $log.AppendText($m + [Environment]::NewLine); $log.ScrollToCaret() }
+function Info($m) { [Windows.Forms.MessageBox]::Show($m, 'MiMo Flow') }
 
-# ---- UI ----
+# ---------- UI ----------
 $form = New-Object Windows.Forms.Form
 $form.Text = 'MiMo Flow'
-$form.Size = New-Object Drawing.Size(460, 360)
+$form.Size = New-Object Drawing.Size(500, 420)
 $form.StartPosition = 'CenterScreen'
 $form.FormBorderStyle = 'FixedDialog'
 $form.MaximizeBox = $false
@@ -78,28 +88,44 @@ $form.Font = New-Object Drawing.Font('Segoe UI', 10)
 
 $title = New-Object Windows.Forms.Label
 $title.Text = 'MiMo Flow'
-$title.Font = New-Object Drawing.Font('Segoe UI', 16, [Drawing.FontStyle]::Bold)
+$title.Font = New-Object Drawing.Font('Segoe UI', 18, [Drawing.FontStyle]::Bold)
 $title.ForeColor = [System.Drawing.Color]::FromArgb(90,80,200)
 $title.Location = New-Object Drawing.Point(20, 14)
-$title.Size = New-Object Drawing.Size(300, 30)
+$title.Size = New-Object Drawing.Size(300, 32)
 $form.Controls.Add($title)
 
 $sub = New-Object Windows.Forms.Label
-$sub.Text = 'Wispr Flow + your own MiMo key = unlimited dictation'
+$sub.Text = 'Unlimited Wispr dictation with your own MiMo key'
 $sub.ForeColor = [System.Drawing.Color]::FromArgb(120,120,120)
-$sub.Location = New-Object Drawing.Point(20, 46)
-$sub.Size = New-Object Drawing.Size(400, 18)
+$sub.Location = New-Object Drawing.Point(20, 48)
+$sub.Size = New-Object Drawing.Size(420, 18)
 $form.Controls.Add($sub)
 
+$gk = New-Object Windows.Forms.Button
+$gk.Text = 'Get MiMo API Key'
+$gk.Location = New-Object Drawing.Point(20, 80)
+$gk.Size = New-Object Drawing.Size(150, 30)
+$gk.BackColor = [System.Drawing.Color]::FromArgb(240,240,245)
+$gk.Add_Click({ Start-Process 'https://platform.xiaomimimo.com' })
+$form.Controls.Add($gk)
+
+$dl = New-Object Windows.Forms.Button
+$dl.Text = 'Download Wispr Flow'
+$dl.Location = New-Object Drawing.Point(185, 80)
+$dl.Size = New-Object Drawing.Size(150, 30)
+$dl.BackColor = [System.Drawing.Color]::FromArgb(240,240,245)
+$dl.Add_Click({ Start-Process 'https://wisprflow.ai' })
+$form.Controls.Add($dl)
+
 $lbl = New-Object Windows.Forms.Label
-$lbl.Text = 'MiMo API key:'
-$lbl.Location = New-Object Drawing.Point(20, 84)
-$lbl.Size = New-Object Drawing.Size(120, 22)
+$lbl.Text = '1. Paste your MiMo API key here:'
+$lbl.Location = New-Object Drawing.Point(20, 126)
+$lbl.Size = New-Object Drawing.Size(300, 20)
 $form.Controls.Add($lbl)
 
 $tb = New-Object Windows.Forms.TextBox
-$tb.Location = New-Object Drawing.Point(150, 82)
-$tb.Size = New-Object Drawing.Size(280, 24)
+$tb.Location = New-Object Drawing.Point(20, 148)
+$tb.Size = New-Object Drawing.Size(300, 24)
 $tb.PasswordChar = '*'
 $cfg0 = Load-Config
 if ($cfg0.mimo_api_key) { $tb.Text = $cfg0.mimo_api_key }
@@ -107,59 +133,64 @@ $form.Controls.Add($tb)
 
 $save = New-Object Windows.Forms.Button
 $save.Text = 'Save Key'
-$save.Location = New-Object Drawing.Point(150, 114)
-$save.Size = New-Object Drawing.Size(120, 32)
+$save.Location = New-Object Drawing.Point(330, 146)
+$save.Size = New-Object Drawing.Size(120, 30)
 $save.BackColor = [System.Drawing.Color]::FromArgb(90,80,200)
 $save.ForeColor = [System.Drawing.Color]::White
 $save.FlatStyle = 'Flat'
 $save.Add_Click({
-  if (-not $tb.Text -or $tb.Text.Trim().Length -eq 0) { [Windows.Forms.MessageBox]::Show('Enter your MiMo API key first.', 'MiMo Flow'); return }
-  Save-ConfigKey $tb.Text.Trim()
-  [Windows.Forms.MessageBox]::Show('Key saved locally (config.json). It is never shared.', 'MiMo Flow')
-  Show-Status
+  if (-not $tb.Text -or $tb.Text.Trim().Length -eq 0) { Info 'Pehle MiMo API key box mein daalo.'; return }
+  Save-Key $tb.Text.Trim()
+  Info 'Key save ho gaya (config.json mein, sirf tumhare machine pe).'
+  Refresh-Status
 })
 $form.Controls.Add($save)
 
-$setup = New-Object Windows.Forms.Button
-$setup.Text = 'First-time Setup'
-$setup.Location = New-Object Drawing.Point(20, 168)
-$setup.Size = New-Object Drawing.Size(190, 38)
-$setup.Add_Click({
-  $out = Run-Node (Join-Path $dir 'src\patcher\patch.js')
-  try { $lnk = Repoint-Shortcut } catch { $lnk = '' }
-  $msg = "Wispr patched.`n$out"
-  if ($lnk) { $msg += "`nDesktop shortcut repointed to MiMo Flow." }
-  [Windows.Forms.MessageBox]::Show($msg, 'MiMo Flow')
-})
-$form.Controls.Add($setup)
+$keyStatus = New-Object Windows.Forms.Label
+$keyStatus.Location = New-Object Drawing.Point(20, 180)
+$keyStatus.Size = New-Object Drawing.Size(240, 18)
+$form.Controls.Add($keyStatus)
 
-$launch = New-Object Windows.Forms.Button
-$launch.Text = 'Launch Wispr'
-$launch.Location = New-Object Drawing.Point(240, 168)
-$launch.Size = New-Object Drawing.Size(190, 38)
-$launch.BackColor = [System.Drawing.Color]::FromArgb(60,180,90)
-$launch.ForeColor = [System.Drawing.Color]::White
-$launch.Add_Click({
+$wisprStatus = New-Object Windows.Forms.Label
+$wisprStatus.Location = New-Object Drawing.Point(270, 180)
+$wisprStatus.Size = New-Object Drawing.Size(210, 18)
+$form.Controls.Add($wisprStatus)
+
+$start = New-Object Windows.Forms.Button
+$start.Text = 'Start MiMo Flow'
+$start.Location = New-Object Drawing.Point(20, 210)
+$start.Size = New-Object Drawing.Size(440, 42)
+$start.BackColor = [System.Drawing.Color]::FromArgb(60,180,90)
+$start.ForeColor = [System.Drawing.Color]::White
+$start.Font = New-Object Drawing.Font('Segoe UI', 12, [Drawing.FontStyle]::Bold)
+$start.Add_Click({
   $cfg = Load-Config
-  if (-not $cfg.mimo_api_key) { [Windows.Forms.MessageBox]::Show('Save your MiMo key first (Save Key).', 'MiMo Flow'); return }
+  if (-not $cfg.mimo_api_key) { Info 'Pehle apni MiMo API key box mein daalo aur Save Key dabao.'; return }
+  if (-not (Test-WisprInstalled)) {
+    Info "Wispr Flow install nahi hai. 'Download Wispr Flow' button se install karo (sign in karo), phir Start dabao."
+    Start-Process 'https://wisprflow.ai'
+    return
+  }
+  Log 'Wispr patch kiya ja raha hai (pehli baar)...'
+  $out = Run-Node (Join-Path $dir 'src\patcher\patch.js')
+  Log $out
+  try { Repoint-Shortcut | Out-Null } catch {}
+  Log 'Proxy + Wispr start ho raha hai...'
   Start-Process -FilePath 'powershell.exe' -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$(Join-Path $dir 'launch.ps1')`""
-  [Windows.Forms.MessageBox]::Show('Proxy started + Wispr launching.', 'MiMo Flow')
+  Log 'Ho gaya! Ab Wispr mein dictate karo.'
+  Log 'Note: pehli baar Wispr microphone permission mangega - Allow karo.'
+  Info 'Setup complete! MiMo Flow is running. Start dictating in Wispr.'
 })
-$form.Controls.Add($launch)
-
-$status = New-Object Windows.Forms.Label
-$status.Location = New-Object Drawing.Point(20, 220)
-$status.Size = New-Object Drawing.Size(410, 20)
-$form.Controls.Add($status)
+$form.Controls.Add($start)
 
 $log = New-Object Windows.Forms.TextBox
 $log.Multiline = $true
 $log.ScrollBars = 'Vertical'
 $log.ReadOnly = $true
-$log.Location = New-Object Drawing.Point(20, 248)
-$log.Size = New-Object Drawing.Size(410, 70)
+$log.Location = New-Object Drawing.Point(20, 262)
+$log.Size = New-Object Drawing.Size(440, 120)
 $form.Controls.Add($log)
 
-$form.Add_Shown({ Show-Status })
+$form.Add_Shown({ Refresh-Status })
 [Windows.Forms.Application]::EnableVisualStyles() | Out-Null
 [Windows.Forms.Application]::Run($form)
