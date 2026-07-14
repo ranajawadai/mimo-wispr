@@ -267,7 +267,7 @@ const server = http.createServer(async (req, res) => {
       }
       const language = langForMimo(bodyObj.language || (bodyObj.properties && bodyObj.properties.language) || '');
       const result = await transcribeWithMimo(audio, language, bodyObj.prompt);
-      console.log(`[proxy] ${pathname}: "${result.content.slice(0, 80)}..." (lang=${result.detected_language})`);
+      console.log(`[proxy] ${pathname}: transcribed ${result.content.length} chars (lang=${result.detected_language})`);
       return sendJson(res, 200, { status: 'raw_transcript', content: result.content, detected_language: result.detected_language });
     } catch (e) {
       console.error(`[proxy] ${pathname} failed:`, e.message);
