@@ -15,6 +15,7 @@ Copy-Item -LiteralPath (Join-Path $root 'README.md') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'config.sample.json') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'dashboard.ps1') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'launch.ps1') -Destination $dist
+Copy-Item -LiteralPath (Join-Path $root 'MiMo-Flow.bat') -Destination $dist
 
 # Optional portable runtimes (added by maintainer before packaging)
 $node = Join-Path $root 'node.exe'

@@ -1,6 +1,6 @@
 {
   "name": "mimoflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Use Wispr Flow with your own Xiaomi MiMo speech-to-text key. Open source, unlimited dictation.",
   "main": "src/proxy/proxy.js",
   "scripts": {

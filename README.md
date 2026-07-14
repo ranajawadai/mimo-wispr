@@ -99,7 +99,12 @@ The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg)
 
 1. Download the latest **`mimoflow-<version>.zip`** from
    [Releases](https://github.com/ranajawadai/mimo-wispr/releases) and unzip it.
-2. Double-click **`dashboard.ps1`** — the simple graphical control panel.
+   > Tip: before extracting, right-click the zip → **Properties → Unblock** so
+   > Windows doesn't block the launcher.
+2. Double-click **`MiMo-Flow.bat`** — this opens the simple graphical dashboard.
+   > Note: if you instead double-click `dashboard.ps1` it opens as **text in
+   > Notepad** — that is normal Windows behaviour. Always use `MiMo-Flow.bat`,
+   > or run `powershell -ExecutionPolicy Bypass -File dashboard.ps1`.
 3. Paste your MiMo API key → click **Save Key**.
 4. Click **First-time Setup** (patches Wispr once; backs up the original).
 5. Click **Launch Wispr** — and start dictating.
@@ -180,6 +185,8 @@ $env:MIMO_API_KEY = "sk-..."; node src/proxy/proxy.js --test path\to\audio.webm
 | Wispr still shows the word cap | Re-run **First-time Setup**; make sure Wispr was restarted. |
 | No transcription / 502 errors | Check your MiMo key is valid and `mimo_base_url` is correct. |
 | Patched UI but no dictation | Ensure the proxy is running before launching Wispr. |
+| Double-clicking `dashboard.ps1` opens Notepad | Use **`MiMo-Flow.bat`** (or run it from PowerShell with `-ExecutionPolicy Bypass`). |
+| Windows SmartScreen blocks the launcher | Unblock the zip (Properties → Unblock) before extracting, then "Run anyway". |
 | Want to revert | Restore `app.asar.bak` (created next to the patched `app.asar`). |
 
 ---
