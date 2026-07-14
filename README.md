@@ -1,70 +1,208 @@
 # MiMo Flow
 
-**Wispr Flow, powered by your own Xiaomi MiMo key. Open source, unlimited dictation.**
+<p align="center">
+  <strong>Wispr Flow, powered by your own Xiaomi MiMo speech-to-text key.</strong><br/>
+  Open source · Unlimited dictation · Privacy-first
+</p>
 
-MiMo Flow is a small open-source toolkit that makes [Wispr Flow](https://wisprflow.ai)
-send its dictation audio to **your own** Xiaomi **MiMo** speech-to-text API key
-instead of Wispr's servers. Because the audio never reaches Wispr's transcription
-servers, the ~2000-words/week limit no longer applies — dictation is effectively
-unlimited. Login and sync still work normally; only transcription is rerouted.
+<p align="center">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg"/>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Windows-lightgrey.svg"/>
+  <img alt="Release" src="https://img.shields.io/github/v/release/ranajawadai/mimo-wispr?label=latest"/>
+  <img alt="Made with Node.js" src="https://img.shields.io/badge/made%20with-Node.js-43853d.svg"/>
+</p>
 
-> This project patches **your own installed copy** of Wispr Flow. It does **not**
-> redistribute Wispr Flow. You must have Wispr Flow installed and your own MiMo
-> API key (from https://platform.xiaomimimo.com).
+---
+
+MiMo Flow is a small, open-source toolkit that makes [Wispr Flow](https://wisprflow.ai)
+send its dictation audio to **your own** [Xiaomi MiMo](https://platform.xiaomimimo.com)
+speech-to-text API key instead of Wispr's servers.
+
+Because the audio never reaches Wispr's transcription servers, the ~2,000-words/week
+limit no longer applies — dictation becomes effectively **unlimited**. Login, account
+sync, and everything else keep working exactly as before; only transcription is rerouted
+through a local proxy running on your machine.
+
+> MiMo Flow patches **your own installed copy** of Wispr Flow. It does **not**
+> redistribute Wispr Flow. You must have Wispr Flow installed and your own MiMo API key.
+
+---
+
+## Table of contents
+
+- [How it works](#how-it-works)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Quick start](#quick-start)
+- [Configuration](#configuration)
+- [Building from source](#building-from-source)
+- [Privacy & security](#privacy--security)
+- [Troubleshooting](#troubleshooting)
+- [Limitations & disclaimer](#limitations--disclaimer)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## How it works
 
 ```
-Wispr Flow (patched)  ──REST──►  MiMo Flow proxy (127.0.0.1:8000)  ──►  MiMo ASR
-        │                          (audio → 16kHz WAV → chunks → ASR)        (mimo-v2.5-asr)
-        └── login/sync ──► upstream (real Wispr servers, untouched)
+┌────────────────────┐        REST         ┌──────────────────────────┐
+│   Wispr Flow       │  ───────────────▶  │   MiMo Flow Proxy        │
+│  (patched, local)  │   /v1/audio/...    │   127.0.0.1:8000         │
+└────────────────────┘                    │                          │
+        │                                 │  • audio → 16kHz WAV     │
+        │ login / sync                    │  • chunk long audio      │
+        ▼                                 │  • call MiMo ASR         │
+┌────────────────────┐                    └───────────┬──────────────┘
+│  Wispr servers     │  ◀── passthrough ──────────────┘
+│  (upstream)        │         (unchanged, for auth/sync only)
+└────────────────────┘
 ```
 
-1. A one-time patch points Wispr's API host at a local proxy and swaps the
-   quota/upgrade UI text for **"Unlimited"** / **"PRO Plan"**.
-2. The local proxy converts the audio to 16 kHz mono WAV and forwards it to MiMo
-   ASR (`mimo-v2.5-asr`), returning the transcript to Wispr.
-3. You type your MiMo key once; it is stored **only on your machine**.
+1. A **one-time patch** points Wispr's API host at a local proxy and replaces the
+   quota / "Upgrade" UI text with **"Unlimited"** / **"PRO Plan"**.
+2. The **local proxy** converts the incoming audio to 16 kHz mono WAV (via ffmpeg),
+   splits long recordings into chunks to reduce ASR hallucinations, and forwards it
+   to MiMo ASR (`mimo-v2.5-asr`). The transcript is returned to Wispr.
+3. You enter your MiMo key **once**; it is stored only on your machine.
 
-## Download & use
+The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg).
 
-1. Download the latest `mimoflow-*.zip` from **Releases** and unzip it.
-2. Double-click **`dashboard.ps1`** (the simple GUI).
+---
+
+## Features
+
+- **Unlimited dictation** — audio is transcribed by your own MiMo key, not Wispr's.
+- **Zero baked secrets** — no API key ships in the code or the repo.
+- **Drop-in** — Wispr login, sync, and UI stay exactly the same.
+- **English + Hinglish** — MiMo `auto` language detection handles code-switching.
+- **Long-audio aware** — automatic chunking keeps transcripts accurate.
+- **Portable** — ships with bundled `node.exe` + `ffmpeg.exe`; no install needed.
+- **Safe patch** — your original `app.asar` is backed up before any change.
+- **MIT licensed** — free to use, modify, and redistribute.
+
+---
+
+## Requirements
+
+| | |
+|---|---|
+| **OS** | Windows (Wispr Flow is Windows-only) |
+| **Wispr Flow** | Installed and signed in |
+| **MiMo API key** | From [platform.xiaomimimo.com](https://platform.xiaomimimo.com) |
+| **Runtime** | Bundled `node.exe` + `ffmpeg.exe` (included in the release) |
+
+---
+
+## Quick start
+
+1. Download the latest **`mimoflow-<version>.zip`** from
+   [Releases](https://github.com/ranajawadai/mimo-wispr/releases) and unzip it.
+2. Double-click **`dashboard.ps1`** — the simple graphical control panel.
 3. Paste your MiMo API key → click **Save Key**.
-4. Click **First-time Setup** (patches Wispr once).
+4. Click **First-time Setup** (patches Wispr once; backs up the original).
 5. Click **Launch Wispr** — and start dictating.
 
-That's it. On daily use, just open the dashboard and click **Launch Wispr**
-(or use the desktop "Wispr Flow" shortcut, which now auto-starts the proxy).
+For daily use afterwards, just open the dashboard and click **Launch Wispr**
+(or use the desktop **"Wispr Flow"** shortcut, which now auto-starts the proxy).
+
+---
 
 ## Configuration
 
-Edit `config.json` (created from `config.sample.json` on first save):
+Your settings live in `config.json` (created from `config.sample.json` on first
+save). Edit it to tune behaviour:
 
-| key | default | meaning |
-|-----|---------|---------|
-| `mimo_api_key` | *(required)* | your MiMo API key |
-| `mimo_base_url` | `https://api.xiaomimimo.com/v1` | MiMo API base |
-| `mimo_asr_model` | `mimo-v2.5-asr` | ASR model |
-| `mimo_language` | `auto` | force a language (`en`, `hi`); `auto` = auto-detect (en + Hinglish) |
-| `listen_port` | `8000` | local proxy port |
-| `chunk_sec` | `30` | split long audio into chunks (reduces hallucinations) |
-| `audio_filter` | `highpass=f=80,loudnorm=...` | ffmpeg audio cleanup |
+| Key | Default | Description |
+|-----|---------|-------------|
+| `mimo_api_key` | *(required)* | Your MiMo API key. Never committed. |
+| `mimo_base_url` | `https://api.xiaomimimo.com/v1` | MiMo API base URL. |
+| `mimo_asr_model` | `mimo-v2.5-asr` | ASR model. |
+| `mimo_api_header` | `api-key` | Auth header name. |
+| `mimo_language` | `auto` | Force a language (`en`, `hi`); `auto` = detect. |
+| `listen_port` | `8000` | Local proxy port. |
+| `upstream` | `https://api.wisprflow.ai` | Wispr host for login/sync passthrough. |
+| `request_timeout` | `18000` | Per-transcription timeout (ms). |
+| `chunk_sec` | `30` | Split audio longer than this into chunks. |
+| `audio_filter` | `highpass=f=80,loudnorm=I=-16:TP=-1.5` | ffmpeg audio cleanup. |
+
+Environment variables (`MIMO_API_KEY`, `MIMO_BASE_URL`, …) override `config.json`.
+
+---
+
+## Building from source
+
+```powershell
+# 1. clone
+git clone https://github.com/ranajawadai/mimo-wispr.git
+cd mimo-wispr
+
+# 2. (optional) drop portable runtimes next to the project for a self-contained build
+#    copy node.exe and ffmpeg.exe into the project root
+
+# 3. build the dist/ folder
+powershell -ExecutionPolicy Bypass -File scripts/build.ps1
+
+# 4. package a versioned release zip into releases/
+powershell -ExecutionPolicy Bypass -File scripts/release.ps1
+```
+
+Run the proxy standalone to verify your key (no Wispr needed):
+
+```powershell
+# conversion-only test (no key required)
+node src/proxy/proxy.js --test path\to\audio.webm --lang en
+
+# with a key set, it also calls MiMo and prints the transcript
+$env:MIMO_API_KEY = "sk-..."; node src/proxy/proxy.js --test path\to\audio.webm
+```
+
+---
 
 ## Privacy & security
 
 - **No API key is bundled.** You supply your own key; it is written only to the
   local `config.json`, which is git-ignored and never published.
-- **No telemetry, no network calls** except to MiMo (for transcription) and
-  Wispr's own servers (for login/sync passthrough).
+- **No telemetry, no network calls** except:
+  - to **MiMo** (for transcription, using your key), and
+  - to **Wispr's own servers** (for login/sync passthrough).
 - The project ships **zero personal data**.
+- The asar patch only rewrites your **local** Wispr install; nothing is uploaded.
 
-## Disclaimer
+---
 
-MiMo Flow is an independent open-source project and is not affiliated with or
-endorsed by Wispr Flow or Xiaomi. Use it in accordance with the respective
-terms of service.
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| Proxy won't start ("key not set") | Save your MiMo key in the dashboard, or set `MIMO_API_KEY`. |
+| Wispr still shows the word cap | Re-run **First-time Setup**; make sure Wispr was restarted. |
+| No transcription / 502 errors | Check your MiMo key is valid and `mimo_base_url` is correct. |
+| Patched UI but no dictation | Ensure the proxy is running before launching Wispr. |
+| Want to revert | Restore `app.asar.bak` (created next to the patched `app.asar`). |
+
+---
+
+## Limitations & disclaimer
+
+- MiMo Flow is an **independent, unofficial** project. It is not affiliated with,
+  endorsed by, or sponsored by Wispr Flow or Xiaomi.
+- Transcription quality and limits depend on your MiMo plan and key.
+- Use it in accordance with the respective [Wispr Flow](https://wisprflow.ai) and
+  [Xiaomi MiMo](https://platform.xiaomimimo.com) terms of service.
+- The quota display is changed client-side only; this does not modify any Wispr
+  server-side limits — it simply routes audio to your own transcription backend.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Security Policy](SECURITY.md) before opening an issue or pull request.
+
+---
 
 ## License
 
-[MIT](LICENSE)
+Released under the [MIT License](LICENSE).
