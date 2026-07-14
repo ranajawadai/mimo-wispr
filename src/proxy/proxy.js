@@ -1,6 +1,6 @@
 'use strict';
 /*
- * MiMo Flow — local proxy  (v1.0, open source)
+ * Mimo Wisper — local proxy  (v1.0, open source)
  * ---------------------------------------------------------------
  * Intercepts Wispr Flow's transcription REST calls (/llm/asr,
  * /llm/asr_audio_chunks) and forwards the audio to Xiaomi MiMo

@@ -9,7 +9,7 @@
 
 ## Reporting a vulnerability
 
-If you discover a security issue in MiMo Flow, please report it **privately**:
+If you discover a security issue in Mimo Wisper, please report it **privately**:
 
 - Open a private security advisory on GitHub, or
 - Email the maintainer (see the repository owner profile).

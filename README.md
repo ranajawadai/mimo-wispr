@@ -1,4 +1,4 @@
-# MiMo Flow
+# Mimo Wisper
 
 <p align="center">
   <strong>Wispr Flow, powered by your own Xiaomi MiMo speech-to-text key.</strong><br/>
@@ -14,7 +14,7 @@
 
 ---
 
-MiMo Flow is a small, open-source toolkit that makes [Wispr Flow](https://wisprflow.ai)
+Mimo Wisper is a small, open-source toolkit that makes [Wispr Flow](https://wisprflow.ai)
 send its dictation audio to **your own** [Xiaomi MiMo](https://platform.xiaomimimo.com)
 speech-to-text API key instead of Wispr's servers.
 
@@ -23,7 +23,7 @@ limit no longer applies — dictation becomes effectively **unlimited**. Login, 
 sync, and everything else keep working exactly as before; only transcription is rerouted
 through a local proxy running on your machine.
 
-> MiMo Flow patches **your own installed copy** of Wispr Flow. It does **not**
+> Mimo Wisper patches **your own installed copy** of Wispr Flow. It does **not**
 > redistribute Wispr Flow. You must have Wispr Flow installed and your own MiMo API key.
 
 ---
@@ -48,7 +48,7 @@ through a local proxy running on your machine.
 
 ```
 ┌────────────────────┐        REST         ┌──────────────────────────┐
-│   Wispr Flow       │  ───────────────▶  │   MiMo Flow Proxy        │
+│   Wispr Flow       │  ───────────────▶  │   Mimo Wisper Proxy        │
 │  (patched, local)  │   /v1/audio/...    │   127.0.0.1:8000         │
 └────────────────────┘                    │                          │
         │                                 │  • audio → 16kHz WAV     │
@@ -78,8 +78,8 @@ The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg)
 - **Drop-in** — Wispr login, sync, and UI stay exactly the same.
 - **English + Hinglish** — MiMo `auto` language detection handles code-switching.
 - **Long-audio aware** — automatic chunking keeps transcripts accurate.
-- **One-click dashboard** — `MiMo-Flow.bat` opens a simple window: get your key,
-  save it, press **Start MiMo Flow**. No commands, no PowerShell knowledge needed.
+- **One-click dashboard** — `Mimo-Wisper.bat` opens a simple window: get your key,
+  save it, press **Start Mimo Wisper**. No commands, no PowerShell knowledge needed.
 - **Portable** — ships with bundled `node.exe` + `ffmpeg.exe`; no install needed.
 - **Safe patch** — your original `app.asar` is backed up before any change.
 - **MIT licensed** — free to use, modify, and redistribute.
@@ -99,21 +99,21 @@ The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg)
 
 ## Quick start (no technical knowledge needed)
 
-1. Download **`mimoflow-<version>.zip`** from
+1. Download **`mimowisper-<version>.zip`** from
    [Releases](https://github.com/ranajawadai/mimo-wispr/releases) and unzip it.
    > Tip: before extracting, right-click the zip → **Properties → Unblock** so
    > Windows doesn't block the launcher.
-2. **Double-click `MiMo-Flow.bat`** — a small window opens.
+2. **Double-click `Mimo-Wisper.bat`** — a small window opens.
 3. Click **Get MiMo API Key** (opens the MiMo site in your browser), copy your key,
    paste it into the box, and click **Save Key**.
-4. Click **Start MiMo Flow**. That's it — it sets everything up and opens Wispr.
+4. Click **Start Mimo Wisper**. That's it — it sets everything up and opens Wispr.
 
 > The first time Wispr opens it will ask for microphone access — click **Allow**.
 > If Wispr Flow isn't installed yet, the window shows a **Download Wispr Flow**
-> button; install it (and sign in), then click **Start MiMo Flow** again.
+> button; install it (and sign in), then click **Start Mimo Wisper** again.
 
-For daily use afterwards, just double-click **`MiMo-Flow.bat`** and click
-**Start MiMo Flow** (or use the desktop **"Wispr Flow"** shortcut, which now
+For daily use afterwards, just double-click **`Mimo-Wisper.bat`** and click
+**Start Mimo Wisper** (or use the desktop **"Wispr Flow"** shortcut, which now
 auto-starts the proxy).
 
 ---
@@ -188,10 +188,10 @@ $env:MIMO_API_KEY = "sk-..."; node src/proxy/proxy.js --test path\to\audio.webm
 | Symptom | Fix |
 |---------|-----|
 | Proxy won't start ("key not set") | Save your MiMo key in the dashboard, or set `MIMO_API_KEY`. |
-| Wispr still shows the word cap | Click **Start MiMo Flow** again; make sure Wispr was restarted. |
+| Wispr still shows the word cap | Click **Start Mimo Wisper** again; make sure Wispr was restarted. |
 | No transcription / 502 errors | Check your MiMo key is valid and `mimo_base_url` is correct. |
 | Patched UI but no dictation | Ensure the proxy is running before launching Wispr. |
-| Double-clicking `dashboard.ps1` opens Notepad | Use **`MiMo-Flow.bat`** (or run it from PowerShell with `-ExecutionPolicy Bypass`). |
+| Double-clicking `dashboard.ps1` opens Notepad | Use **`Mimo-Wisper.bat`** (or run it from PowerShell with `-ExecutionPolicy Bypass`). |
 | Windows SmartScreen blocks the launcher | Unblock the zip (Properties → Unblock) before extracting, then "Run anyway". |
 | Want to revert | Restore `app.asar.bak` (created next to the patched `app.asar`). |
 
@@ -199,7 +199,7 @@ $env:MIMO_API_KEY = "sk-..."; node src/proxy/proxy.js --test path\to\audio.webm
 
 ## Limitations & disclaimer
 
-- MiMo Flow is an **independent, unofficial** project. It is not affiliated with,
+- Mimo Wisper is an **independent, unofficial** project. It is not affiliated with,
   endorsed by, or sponsored by Wispr Flow or Xiaomi.
 - Transcription quality and limits depend on your MiMo plan and key.
 - Use it in accordance with the respective [Wispr Flow](https://wisprflow.ai) and

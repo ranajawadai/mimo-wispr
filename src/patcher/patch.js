@@ -1,6 +1,6 @@
 'use strict';
 // Patches every installed Wispr Flow app.asar:
-//   1. redirects the API host to the local MiMo Flow proxy
+//   1. redirects the API host to the local Mimo Wisper proxy
 //   2. swaps the quota/upgrade UI text for "Unlimited" / "PRO Plan"
 // Backs up each original asar once. Run from the dashboard's "First-time Setup".
 //

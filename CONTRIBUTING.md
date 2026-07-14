@@ -1,6 +1,6 @@
-# Contributing to MiMo Flow
+# Contributing to Mimo Wisper
 
-Thanks for your interest in improving MiMo Flow! This document explains how to
+Thanks for your interest in improving Mimo Wisper! This document explains how to
 get involved.
 
 ## Code of conduct
@@ -12,7 +12,7 @@ kindness and professionalism.
 
 - Search [existing issues](https://github.com/ranajawadai/mimo-wispr/issues)
   before opening a new one.
-- Include: Windows version, Wispr Flow version, MiMo Flow version, and the exact
+- Include: Windows version, Wispr Flow version, Mimo Wisper version, and the exact
   steps to reproduce. Logs help — see `traffic.log` (created when `LOG_TRAFFIC=1`).
 
 ## Development setup

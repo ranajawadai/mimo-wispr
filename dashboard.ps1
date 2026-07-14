@@ -74,11 +74,11 @@ function Refresh-Status {
   }
 }
 function Log($m) { $log.AppendText($m + [Environment]::NewLine); $log.ScrollToCaret() }
-function Info($m) { [Windows.Forms.MessageBox]::Show($m, 'MiMo Flow') }
+function Info($m) { [Windows.Forms.MessageBox]::Show($m, 'Mimo Wisper') }
 
 # ---------- UI ----------
 $form = New-Object Windows.Forms.Form
-$form.Text = 'MiMo Flow'
+$form.Text = 'Mimo Wisper'
 $form.Size = New-Object Drawing.Size(500, 420)
 $form.StartPosition = 'CenterScreen'
 $form.FormBorderStyle = 'FixedDialog'
@@ -87,7 +87,7 @@ $form.BackColor = [System.Drawing.Color]::White
 $form.Font = New-Object Drawing.Font('Segoe UI', 10)
 
 $title = New-Object Windows.Forms.Label
-$title.Text = 'MiMo Flow'
+$title.Text = 'Mimo Wisper'
 $title.Font = New-Object Drawing.Font('Segoe UI', 18, [Drawing.FontStyle]::Bold)
 $title.ForeColor = [System.Drawing.Color]::FromArgb(90,80,200)
 $title.Location = New-Object Drawing.Point(20, 14)
@@ -157,7 +157,7 @@ $wisprStatus.Size = New-Object Drawing.Size(210, 18)
 $form.Controls.Add($wisprStatus)
 
 $start = New-Object Windows.Forms.Button
-$start.Text = 'Start MiMo Flow'
+$start.Text = 'Start Mimo Wisper'
 $start.Location = New-Object Drawing.Point(20, 210)
 $start.Size = New-Object Drawing.Size(440, 42)
 $start.BackColor = [System.Drawing.Color]::FromArgb(60,180,90)
@@ -179,7 +179,7 @@ $start.Add_Click({
   Start-Process -FilePath 'powershell.exe' -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$(Join-Path $dir 'launch.ps1')`""
   Log 'Ho gaya! Ab Wispr mein dictate karo.'
   Log 'Note: pehli baar Wispr microphone permission mangega - Allow karo.'
-  Info 'Setup complete! MiMo Flow is running. Start dictating in Wispr.'
+  Info 'Setup complete! Mimo Wisper is running. Start dictating in Wispr.'
 })
 $form.Controls.Add($start)
 

@@ -1,4 +1,4 @@
-# Build MiMo Flow into dist/ — bundles the proxy, patcher, dashboard, docs,
+# Build Mimo Wisper into dist/ — bundles the proxy, patcher, dashboard, docs,
 # and (if present) the portable node.exe + ffmpeg.exe runtimes.
 $ErrorActionPreference = 'Stop'
 $dir = $PSScriptRoot
@@ -15,7 +15,7 @@ Copy-Item -LiteralPath (Join-Path $root 'README.md') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'config.sample.json') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'dashboard.ps1') -Destination $dist
 Copy-Item -LiteralPath (Join-Path $root 'launch.ps1') -Destination $dist
-Copy-Item -LiteralPath (Join-Path $root 'MiMo-Flow.bat') -Destination $dist
+Copy-Item -LiteralPath (Join-Path $root 'Mimo-Wisper.bat') -Destination $dist
 
 # Optional portable runtimes (added by maintainer before packaging)
 $node = Join-Path $root 'node.exe'

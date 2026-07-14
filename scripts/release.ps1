@@ -5,7 +5,7 @@ $root = (Get-Item -LiteralPath $dir).Parent.FullName
 $dist = Join-Path $root 'dist'
 $releases = Join-Path $root 'releases'
 $version = (Get-Content -LiteralPath (Join-Path $root 'package.json') -Raw | ConvertFrom-Json).version
-$zip = Join-Path $releases "mimoflow-$version.zip"
+$zip = Join-Path $releases "mimowisper-$version.zip"
 
 if (-not (Test-Path -LiteralPath $dist)) { Write-Error 'dist/ not found — run scripts/build.ps1 first.'; exit 1 }
 New-Item -ItemType Directory -Path $releases -Force | Out-Null
