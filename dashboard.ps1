@@ -175,8 +175,9 @@ $start.Add_Click({
   $out = Run-Node (Join-Path $dir 'src\patcher\patch.js')
   Log $out
   try { Repoint-Shortcut | Out-Null } catch {}
-  Log 'Proxy + Wispr start ho raha hai...'
-  Start-Process -FilePath 'powershell.exe' -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$(Join-Path $dir 'launch.ps1')`""
+                       Log 'Proxy + Wispr start ho raha hai...'
+                       $env:MIMOWISPER_SKIP_PATCH = '1'
+                       Start-Process -FilePath 'powershell.exe' -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$(Join-Path $dir 'launch.ps1')`""
   Log 'Ho gaya! Ab Wispr mein dictate karo.'
   Log 'Note: pehli baar Wispr microphone permission mangega - Allow karo.'
   Info 'Setup complete! Mimo Wisper is running. Start dictating in Wispr.'

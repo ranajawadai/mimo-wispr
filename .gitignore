@@ -7,6 +7,9 @@ config.json
 *.log
 traffic.log
 
+# Self-heal state (runtime, not committed)
+mimowisper-state.json
+
 # Build output (attached to GitHub Releases instead)
 /dist/
 /releases/

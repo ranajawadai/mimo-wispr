@@ -82,6 +82,8 @@ The proxy is intentionally tiny and dependency-free (Node.js built-ins + ffmpeg)
   save it, press **Start Mimo Wisper**. No commands, no PowerShell knowledge needed.
 - **Portable** — ships with bundled `node.exe` + `ffmpeg.exe`; no install needed.
 - **Safe patch** — your original `app.asar` is backed up before any change.
+- **Self-healing** — automatically re-patches after a Wispr update, so dictation
+  never silently breaks (Wispr updates itself and would otherwise wipe the patch).
 - **MIT licensed** — free to use, modify, and redistribute.
 
 ---
